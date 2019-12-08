@@ -1,5 +1,6 @@
 import Data.Array
 import Control.Monad (void)
+import System.IO (hFlush, stdout)
 
 type Program = Array Int Int
 
@@ -59,12 +60,12 @@ eval ix arr =
             eval (ix + 4) (setValue (getValue p1 arr * getValue p2 arr) dest arr)
 
         In dest -> do
-            putStr "Input: "
             inNum <- read <$> getLine
             eval (ix + 2) (setValue inNum dest arr)
 
         Out ref -> do
-            print (arr ! ref)
+            putStrLn . show $ (arr ! ref)
+            hFlush stdout
             eval (ix + 2) arr
 
         JumpIfTrue p1 p2 ->
