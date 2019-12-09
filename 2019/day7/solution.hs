@@ -4,15 +4,13 @@
 -}
 
 import qualified System.Process as Proc
-import System.Process (ProcessHandle, CreateProcess(..), StdStream(..))
-import System.IO (Handle, hPutStrLn, hFlush, hGetLine)
+import System.Process (CreateProcess(..), StdStream(..))
+import System.IO (hPutStrLn, hFlush, hGetLine)
+import System.Exit (exitSuccess)
 import Data.List (permutations)
-import Control.Monad (foldM, void)
+import Control.Monad (forever, foldM, void)
 import Data.Maybe (isNothing)
-import Control.Concurrent (threadDelay)
-
--- Debugging
-import Debug.Trace
+import Control.Concurrent (MVar, newEmptyMVar, putMVar, takeMVar, forkIO, threadDelay)
 
 -- Static
 programLocation = "../day5/solution"
@@ -30,48 +28,46 @@ runThrusters =
         read <$> Proc.readProcess programLocation [] (show phase <> "\n" <> show input)
     ) 0
 
--- PROBLEM 2 (not yet working properly) --
+-- PROBLEM 2 --
 
 problem2 :: IO ()
 problem2 = do
     thrusterOuts <- mapM runThrustersFeedback $ permutations [5..9]
     print $ maximum thrusterOuts
 
-type ProcIOHandle = (Handle, Handle, ProcessHandle)
+runThrusterThread :: (Int, Maybe (MVar Int), (MVar Int, MVar Int)) -> IO ()
+runThrusterThread (phase, mbMResult, (mInput, mOutput)) =
+    void $ forkIO $ do
+        (Just inHandle, Just outHandle, _, ph) <-
+            Proc.createProcess (Proc.proc programLocation []) {
+                std_in = CreatePipe,
+                std_out = CreatePipe
+            }
+        hPutStrLn inHandle (show phase)
+        forever $ do
+            input <- takeMVar mInput
+            hPutStrLn inHandle (show input) >> hFlush inHandle
+            threadDelay 250
+            output <- read <$> hGetLine outHandle
+            threadDelay 250
+            stillRunning <- Proc.getProcessExitCode ph >>= return . isNothing
+            case (stillRunning, mbMResult) of
+                (False, (Just mResult)) ->
+                    putMVar mResult output >> exitSuccess
 
-sendToStdin :: ProcIOHandle -> Int -> IO ()
-sendToStdin (inHandle, _, _) val =
-    hPutStrLn inHandle (traceShowId $ show val) >> hFlush inHandle
-
-getLineFromStdout :: ProcIOHandle -> IO Int
-getLineFromStdout (_, outHandle, _) =
-    read <$> hGetLine outHandle
-
-isProcessRunning :: ProcIOHandle -> IO Bool
-isProcessRunning (_, _, procHandle) =
-    Proc.getProcessExitCode procHandle >>= return . isNothing
+                _ ->
+                    putMVar mOutput output
 
 runThrustersFeedback :: [Int] -> IO Int
 runThrustersFeedback phases = do
-    ampPrograms <- mapM (\phase -> do
-            (Just inHandle, Just outHandle, _, ph) <-
-                Proc.createProcess (Proc.proc programLocation []) {
-                    std_in = CreatePipe,
-                    std_out = CreatePipe
-                }
-            hPutStrLn inHandle (traceShowId $ show phase)
-            return (inHandle, outHandle, ph)
-        ) phases
-    runFeedbackLoop 0 (cycle ampPrograms)
-  where
-    runFeedbackLoop thrustSignal (prog:programs) = do
-        void $ sendToStdin prog thrustSignal
-        outThrust <- getLineFromStdout prog
-        stillRunning <- isProcessRunning prog
-
-        -- debugging
-        putStrLn . show $ (thrustSignal, outThrust, stillRunning)
-
-        if stillRunning
-            then runFeedbackLoop outThrust programs
-            else return outThrust
+    mResult <- newEmptyMVar
+    mvars <- mapM (const newEmptyMVar) phases
+    let threadInOuts = zip mvars (tail $ cycle mvars)
+        lastPhase = last phases
+        mbReturnList = map (\phase ->
+                if phase == lastPhase then Just mResult else Nothing
+            ) phases
+    mapM_ runThrusterThread $ zip3 phases mbReturnList threadInOuts
+    let (mFirstInput, _) = head threadInOuts
+    putMVar mFirstInput 0
+    takeMVar mResult
