@@ -21,7 +21,7 @@ data Op
     = Add Param Param Pointer
     | Mul Param Param Pointer
     | In Pointer
-    | Out Pointer
+    | Out Param
     | JumpIfTrue Param Param
     | JumpIfFalse Param Param
     | LessThan Param Param Pointer
@@ -51,6 +51,7 @@ parseOpAt ix mem = do
             let p = case paramModeAt n of
                     0 -> Ref
                     2 -> Rel
+                    s -> error (show (s, opCode))
             in do
             val <- readArray mem (ix + n)
             return $ p val
@@ -63,7 +64,7 @@ parseOpAt ix mem = do
                  <*> (param 2)
                  <*> (pointerParam 3)
         3 -> In  <$> (pointerParam 1)
-        4 -> Out <$> (pointerParam 1)
+        4 -> Out <$> (param 1)
         5 -> JumpIfTrue  <$> (param 1)
                          <*> (param 2)
         6 -> JumpIfFalse <$> (param 1)
@@ -113,8 +114,8 @@ eval ix prog@(Program { progRelativeBase, progMemory }) = do
             setValue inNum dest prog
             eval (ix + 2) prog
 
-        Out pointer -> do
-            getValue (Mem pointer) prog >>= putStrLn . show
+        Out p1 -> do
+            getValue p1 prog >>= putStrLn . show
             hFlush stdout
             eval (ix + 2) prog
 
