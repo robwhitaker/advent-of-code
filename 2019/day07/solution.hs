@@ -1,6 +1,6 @@
 {- NOTE: Both answers here rely on the solution to Day 5
 --       being compiled to an executable and located at
---       ../day5/solution.
+--       ../day05/solution.
 -}
 
 import qualified System.Process as Proc
@@ -13,7 +13,7 @@ import Data.Maybe (isNothing)
 import Control.Concurrent (MVar, newEmptyMVar, putMVar, takeMVar, forkIO, threadDelay)
 
 -- Static
-programLocation = "../day5/solution"
+programLocation = "../day05/solution"
 
 -- PROBLEM 1 --
 

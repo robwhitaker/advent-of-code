@@ -1,4 +1,4 @@
-{- Requires Day 9 to be compiled to ../day9/solution -}
+{- Requires Day 9 to be compiled to ../day09/solution -}
 
 import qualified Data.Map as Map
 import Data.Map (Map)
@@ -43,7 +43,7 @@ move (x, y) facing move =
 
 runRobot :: Color -> IO Hull
 runRobot startingColor = do
-    (Just robotIn, Just robotOut, _, ph) <- createProcess (shell "../day9/solution") {
+    (Just robotIn, Just robotOut, _, ph) <- createProcess (shell "../day09/solution") {
         std_in = CreatePipe,
         std_out = CreatePipe
     }
