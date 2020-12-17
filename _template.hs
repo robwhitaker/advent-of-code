@@ -1,3 +1,5 @@
+import System.Environment (getArgs)
+
 getInput :: IO _
 getInput = do
     inLines <- lines <$> readFile "input.txt"
@@ -34,3 +36,12 @@ splitOn needle inList =
         else go acc (x:curList) xs
     go acc curList [] =
         reverse $ reverse curList:acc
+
+-- Main --
+
+main :: IO ()
+main = do
+    [problem] <- getArgs
+    case problem of
+        "1" -> problem1
+        "2" -> problem2
