@@ -1,3 +1,7 @@
 solution
 *.hi
 *.o
+dist/
+dist-newstyle/
+.direnv/
+target/

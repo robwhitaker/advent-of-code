@@ -1,0 +1,36 @@
+cabal-version:      3.4
+name:               AoC2022
+version:            0.1.0.0
+synopsis:           Solutions to Advent of Code 2022
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Rob Whitaker
+maintainer:         dev@robwhitaker.com
+build-type:         Simple
+data-files:         problems/**/input.txt,
+                    problems/**/input_sample.txt
+
+common warnings
+    ghc-options: -Wall
+                 -fno-warn-missing-home-modules
+
+library
+    import:           warnings
+    exposed-modules:  Utils,
+                      Day01
+    build-depends:    base,
+                      split
+    hs-source-dirs:   haskell
+    default-language: GHC2021
+
+test-suite AoC2022-test
+    import:           warnings
+    default-language: GHC2021
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   haskell-test
+    main-is:          Main.hs
+    build-depends:
+        base,
+        hspec,
+        directory,
+        AoC2022
