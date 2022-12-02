@@ -17,7 +17,8 @@ common warnings
 library
     import:           warnings
     exposed-modules:  Utils,
-                      Day01
+                      Day01,
+                      Day02
     build-depends:    base,
                       split
     hs-source-dirs:   haskell
