@@ -18,8 +18,10 @@ library
     import:           warnings
     exposed-modules:  Utils,
                       Day01,
-                      Day02
+                      Day02,
+                      Day03
     build-depends:    base,
+                      containers,
                       split
     hs-source-dirs:   haskell
     default-language: GHC2021
