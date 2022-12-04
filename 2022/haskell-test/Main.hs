@@ -5,6 +5,7 @@ import Data.Char (toLower)
 import Day01 qualified
 import Day02 qualified
 import Day03 qualified
+import Day04 qualified
 import Paths_AoC2022 (getDataFileName)
 import Test.Hspec
 
@@ -15,7 +16,9 @@ problems =
     ("Day02", 1, Day02.problem1, 15, 11150),
     ("Day02", 2, Day02.problem2, 12, 8295),
     ("Day03", 1, Day03.problem1, 157, 7863),
-    ("Day03", 2, Day03.problem2, 70, 2488)
+    ("Day03", 2, Day03.problem2, 70, 2488),
+    ("Day04", 1, Day04.problem1, 2, 560),
+    ("Day04", 2, Day04.problem2, 4, 839)
   ]
 
 main :: IO ()

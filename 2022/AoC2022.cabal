@@ -19,7 +19,8 @@ library
     exposed-modules:  Utils,
                       Day01,
                       Day02,
-                      Day03
+                      Day03,
+                      Day04
     build-depends:    base,
                       containers,
                       split
