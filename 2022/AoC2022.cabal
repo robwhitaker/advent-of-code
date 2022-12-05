@@ -20,10 +20,12 @@ library
                       Day01,
                       Day02,
                       Day03,
-                      Day04
+                      Day04,
+                      Day05
     build-depends:    base,
                       containers,
-                      split
+                      split,
+                      vector
     hs-source-dirs:   haskell
     default-language: GHC2021
 
