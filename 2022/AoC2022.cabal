@@ -7,8 +7,7 @@ license-file:       LICENSE
 author:             Rob Whitaker
 maintainer:         dev@robwhitaker.com
 build-type:         Simple
-data-files:         problems/**/input.txt,
-                    problems/**/input_sample.txt
+data-files:         problems/**/*.txt
 
 common warnings
     ghc-options: -Wall
@@ -21,7 +20,8 @@ library
                       Day02,
                       Day03,
                       Day04,
-                      Day05
+                      Day05,
+                      Day06
     build-depends:    base,
                       containers,
                       split,
